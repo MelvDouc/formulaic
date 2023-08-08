@@ -1,32 +1,36 @@
-type StringRuleDetail = {
+export interface StringCriteria {
   minLength?: number;
   maxLength?: number;
   regex?: RegExp;
 };
 
-type NumericRuleDetail = {
+export interface NumberCriteria {
   min?: number;
   max?: number;
   /** If set to `false`, checks if the value is a float. */
   isInt?: boolean;
 };
 
-interface DateRuleDetail {
+export interface DateCriteria {
   isBefore?: Date;
   isAfter?: Date;
 }
 
-type ExpectedTypeRule<T extends Value> = WithError<(
-  T extends string ? StringRuleDetail
-  : T extends number ? NumericRuleDetail
-  : T extends Date ? DateRuleDetail
+export type Criteria<T extends Value> = (
+  T extends string ? StringCriteria
+  : T extends number ? NumberCriteria
+  : T extends Date ? DateCriteria
   : never
-)>;
+);
 
-type Rules<T extends TestObject> = {
-  [K in keyof T]?: ExpectedTypeRule<T[K]>[];
+export type Rule<T extends Value> = Criteria<T> & {
+  /** The error message returned. */
+  message: string;
 };
 
-type WithError<T> = T & { message: string; };
-type Value = string | number | boolean | Date;
-type TestObject = Record<string, Value>;
+export type RulesRecord<T extends SourceObject> = {
+  [K in keyof T]?: Rule<T[K]>[];
+};
+
+export type Value = string | number | boolean | Date;
+export type SourceObject = Record<string, Value>;
