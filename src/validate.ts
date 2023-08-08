@@ -6,7 +6,7 @@ import { SourceObject, RulesRecord, Rule } from "./types.js";
  * @param rules The conditions that must be met by the source object.
  * @returns An array of error messages.
  */
-export default function validate<T extends SourceObject>(source: T, rules: RulesRecord<T>): string[] {
+export function validate<T extends SourceObject>(source: T, rules: RulesRecord<T>): string[] {
   return Object.keys(rules).reduce<string[]>((acc, key) => {
     const value = source[key];
     const childRules = rules[key];
