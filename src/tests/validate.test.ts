@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import { validate } from "../validate.js";
+import { validate } from "../validation.js";
 import { strictEqual } from "node:assert";
 
 describe("validate", () => {
