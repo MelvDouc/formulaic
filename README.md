@@ -1,4 +1,4 @@
-# Formulaic
+# shape-and-form
 
 A lightweight form validator.
 
