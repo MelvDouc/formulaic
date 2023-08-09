@@ -1,12 +1,15 @@
 // @ts-check
 
-import { validate } from "formulaic";
+import { validate, cast } from "formulaic";
 
-const productUpdate = {
-  name: "",
-  price: 0,
-  expiryDate: new Date("1970-01-01")
-};
+const productUpdate = cast({
+  name: "  ",
+  price: "0.5"
+}, {
+  name: { type: String, trim: true },
+  price: { type: Number, roundFn: Math.floor },
+  expiryDate: { value: new Date("1970-01-01") }
+});
 
 const errors = validate(productUpdate, {
   name: [
@@ -24,4 +27,4 @@ const errors = validate(productUpdate, {
   ]
 });
 
-console.log(errors);
+console.log(productUpdate, errors);
