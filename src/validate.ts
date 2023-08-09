@@ -20,6 +20,10 @@ export function validate<T extends SourceObject>(source: T, rules: RulesRecord<T
         for (const error of numberErrors(value, childRules as Rule<number>[]))
           acc.push(error);
         break;
+      case "boolean":
+        for (const error of booleanErrors(value, childRules as Rule<boolean>[]))
+          acc.push(error);
+        break;
       case "object":
         if (value instanceof Date)
           for (const error of dateErrors(value, childRules as Rule<Date>[]))
@@ -29,6 +33,10 @@ export function validate<T extends SourceObject>(source: T, rules: RulesRecord<T
 
     return acc;
   }, []);
+}
+
+export function createValidator<T extends SourceObject>(rules: RulesRecord<T>) {
+  return (source: T) => validate(source, rules);
 }
 
 function* stringErrors(value: string, childRules: Rule<string>[]): Generator<string> {
@@ -49,6 +57,12 @@ function* numberErrors(value: number, childRules: Rule<number>[]): Generator<str
       || isInt === true && !Number.isInteger(value)
       || isInt === false && Number.isInteger(value)
     )
+      yield message;
+}
+
+function* booleanErrors(value: boolean, childRules: Rule<boolean>[]): Generator<string> {
+  for (const { mustBeTrue, message } of childRules)
+    if (value !== mustBeTrue)
       yield message;
 }
 
