@@ -1,6 +1,6 @@
 // @ts-check
 
-import { validate, cast } from "formulaic";
+import { validate, cast } from "shape-and-form";
 
 const productUpdate = cast({
   name: "  ",

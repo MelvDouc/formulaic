@@ -19,7 +19,7 @@ describe("Casting", () => {
   it("should implement string trimming", () => {
     const test = { name: " abc   " };
     const casted = cast(test, {
-      name: { type: String, trim: true }
+      name: { type: "string", trim: true }
     });
     strictEqual(casted.name, "abc");
   });

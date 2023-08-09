@@ -4,14 +4,49 @@ A lightweight form validator.
 
 ## Examples
 
+### Casting
+
+```javascript
+import { cast } from "shape-and-form";
+
+const rawData = {
+  name: "  ",
+  price: "0.5"
+};
+
+const productUpdate = cast(rawData, {
+  name: {
+    type: "string",
+    trim: true
+  },
+  price: {
+    type: "number",
+    roundFn: Math.trunc
+  },
+  expiryDate: {
+    type: "date",
+    fallback: new Date("1970-01-01")
+  },
+  missingProp: {
+    type: "string",
+    ignoreIfAbsent: true
+  }
+});
+
+console.log(productUpdate);
+/*
+{
+  name: "",
+  price: 0,
+  expiryDate: 1970-01-01T00:00:00.000Z
+}
+*/
+```
+
+### Validating
+
 ```javascript
 import { validate } from "shape-and-form";
-
-const productUpdate = {
-  name: String(req.body.email ?? "").trim(),
-  price: parseInt(req.body.price),
-  expiryDate: new Date(req.body.date ?? "")
-};
 
 const errors = validate(productUpdate, {
   name: [
