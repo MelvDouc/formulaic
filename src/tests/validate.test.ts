@@ -29,10 +29,12 @@ describe("validate", () => {
     const user = { email: "example@email.com" } as const;
     const errors = validate(user, {
       email: [
-        { regex: /^[^@]+@[^@.]+\.[^@.]+$/, message: errorMessages.INVALID_EMAIL }
+        { regex: /^[^@]+@[^@.]+\.[^@.]+$/, message: errorMessages.INVALID_EMAIL },
+        { regex: /^[^@]+[^@.]+\.[^@.]+$/, message: errorMessages.INVALID_EMAIL }
       ]
     });
 
-    strictEqual(errors.length, 0);
+    strictEqual(errors.length, 1);
+    strictEqual(errors[0], errorMessages.INVALID_EMAIL);
   });
 });
