@@ -1,4 +1,5 @@
-export type Value = string | number | boolean | Date;
+import { Value } from "./values.js";
+
 export type SourceObject = Record<string, Value>;
 
 export interface Constraint {
