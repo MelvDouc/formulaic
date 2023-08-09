@@ -5,7 +5,7 @@ A lightweight form validator.
 ## Examples
 
 ```javascript
-import { validate } from "formulaic";
+import { validate } from "shape-and-form";
 
 const productUpdate = {
   name: String(req.body.email ?? "").trim(),

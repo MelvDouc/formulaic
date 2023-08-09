@@ -1,8 +1,8 @@
 .vscode
 node_modules
-dist/**/*.test.js
+dist/tests
 src
 test
 
 .gitignore
-tsconfig
+tsconfig.json
