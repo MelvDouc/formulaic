@@ -8,6 +8,10 @@ type PrimitiveTypes<T> =
   : T extends DateConstraint ? Date
   : never;
 
+type ForcedValue<T> = {
+  value: T;
+};
+
 export interface BooleanConstraint {
   type: "boolean";
 };
@@ -35,13 +39,13 @@ export type DateConstraint = {
 };
 
 type Constraint = BooleanConstraint | NumberConstraint | StringConstraint | BigIntConstraint | DateConstraint;
-export type TypedConstraint = Constraint & { ignoreIfAbsent?: boolean; };
+export type OptionalConstraint = Constraint & { ignoreIfAbsent?: boolean; };
 
-export type Rule = { value: Value; } | TypedConstraint;
-export type RulesRecord = Record<string, Rule>;
+export type Rule<T> = ForcedValue<T> | OptionalConstraint;
+export type RulesRecord = Record<string, Rule<any>>;
 
 export type CastedRecord<RR extends RulesRecord> = {
-  [K in keyof RR]: RR[K] extends { value: Value; } ? RR[K]["value"]
-  : RR[K] extends TypedConstraint ? (RR[K]["ignoreIfAbsent"] extends true ? never : PrimitiveTypes<RR[K]>)
-  : never
+  [K in keyof RR]: RR[K] extends ForcedValue<infer T> ? T
+  : RR[K] extends OptionalConstraint ? (RR[K]["ignoreIfAbsent"] extends true ? (PrimitiveTypes<RR[K]> | undefined) : PrimitiveTypes<RR[K]>)
+  : never;
 };
