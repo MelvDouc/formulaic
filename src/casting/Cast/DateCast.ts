@@ -1,5 +1,5 @@
-import { isNumber, isString } from "../../utils.js";
-import Cast from "./Cast.js";
+import Cast from "$src/casting/Cast/Cast.js";
+import { isNumber, isString } from "$src/utils.js";
 
 export default class DateCast extends Cast<Date> {
   private static toDate(value: unknown) {
@@ -10,6 +10,6 @@ export default class DateCast extends Cast<Date> {
     return isNumber(value) || isString(value) || value instanceof Date;
   }
 
-  public readonly [Cast.sym] = new Set([DateCast.toDate]);
+  public readonly [Cast.castFnSymbol] = new Set([DateCast.toDate]);
 
 }

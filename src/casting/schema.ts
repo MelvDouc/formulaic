@@ -1,22 +1,28 @@
-import { Casting } from "../types/types.js";
-import Cast from "./casts/Cast.js";
-import BooleanCast from "./casts/BooleanCast.js";
-import StringCast from "./casts/StringCast.js";
-import NumberCast from "./casts/NumberCast.js";
+import BigIntCast from "$src/casting/Cast/BigIntCast.js";
+import BooleanCast from "$src/casting/Cast/BooleanCast.js";
+import StringCast from "$src/casting/Cast/StringCast.js";
+import NumberCast from "$src/casting/Cast/NumberCast.js";
+import DateCast from "$src/casting/Cast/DateCast.js";
+import { CastingTypes } from "$src/types/types.js";
 
-const object = (schema: Casting.Schema) => {
+const object = (schema: CastingTypes.Schema) => {
   const cast = (source: Record<string, any>) => {
-    return Object.entries(schema).reduce((acc, [key, value]) => {
-      acc[key] = [...value[Cast.sym]].reduce((acc, fn) => fn(acc), source[key]);
+    return Object.entries(schema).reduce((acc, [key, cast]) => {
+      const value = cast.getValue(source[key]);
+      if (value !== undefined)
+        acc[key] = value;
       return acc;
-    }, {} as Casting.CastedObject<Casting.Schema>);
+    }, {} as CastingTypes.CastedObject<CastingTypes.Schema>);
   };
   return { cast };
 };
 
 export const Schema = {
-  boolean: () => new BooleanCast(),
-  string: () => new StringCast(),
-  number: () => new NumberCast(),
+  bigint: (defaultValue?: bigint) => new BigIntCast(defaultValue),
+  boolean: (defaultValue?: boolean) => new BooleanCast(defaultValue),
+  string: (defaultValue?: string) => new StringCast(defaultValue),
+  number: (defaultValue?: number) => new NumberCast(defaultValue),
+  date: (defaultValue?: Date) => new DateCast(defaultValue),
+  null: () => new NumberCast(),
   object
 } as const;

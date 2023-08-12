@@ -1,4 +1,4 @@
-import Cast from "./Cast.js";
+import Cast from "$src/casting/Cast/Cast.js";
 
 export default class StringCast extends Cast<string> {
   private static toString(value: unknown) {
@@ -11,10 +11,10 @@ export default class StringCast extends Cast<string> {
     return value.trim();
   }
 
-  public readonly [Cast.sym] = new Set([StringCast.toString]);
+  public readonly [Cast.castFnSymbol] = new Set([StringCast.toString]);
 
   public trim(): this {
-    this[Cast.sym].add(StringCast.trim);
+    this[Cast.castFnSymbol].add(StringCast.trim);
     return this;
   }
 }
