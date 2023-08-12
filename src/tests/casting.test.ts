@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import { cast } from "../casting.js";
+import { Schema } from "../casting/schema.js";
 import { strictEqual } from "node:assert";
 
 describe("Casting", () => {
@@ -8,19 +8,21 @@ describe("Casting", () => {
       name: null,
       price: "abc"
     };
-    const casted = cast(product, {
-      name: { value: "product name" },
-      price: { value: 0 }
+    const schema = Schema.object({
+      name: Schema.string(),
+      price: Schema.number().convertNaN(0)
     });
+    const casted = schema.cast(product);
     strictEqual(casted.name, "product name");
     strictEqual(casted.price, 0);
   });
 
   it("should implement string trimming", () => {
     const test = { name: " abc   " };
-    const casted = cast(test, {
-      name: { type: "string", trim: true }
+    const schema = Schema.object({
+      name: Schema.string().trim()
     });
+    const casted = schema.cast(test);
     strictEqual(casted.name, "abc");
   });
 });
