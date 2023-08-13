@@ -1,6 +1,6 @@
 {
   "name": "shape-and-form",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A lightweight form validator.",
   "engines": {
     "node": ">=14.17.0"
