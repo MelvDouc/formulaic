@@ -1,6 +1,6 @@
-import { CastingTypes } from "$src/types/types.js";
+import { CastingTypes, Value } from "$src/types/types.js";
 
-export default abstract class Cast<T extends CastingTypes.Value> {
+export default abstract class Cast<T extends Value> {
   public static readonly castFnSymbol = Symbol();
 
   // @ts-ignore

@@ -1,1 +1,1 @@
-export type Value = string | number | boolean | Date;
+export type Value = string | boolean | number | bigint | null | object | Date;

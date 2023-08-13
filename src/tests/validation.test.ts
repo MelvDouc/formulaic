@@ -1,40 +1,37 @@
+import { strictEqual, strict } from "node:assert";
 import { describe, it } from "node:test";
-import { validate } from "../validation.js";
-import { strictEqual } from "node:assert";
+import { Schema } from "$src/validation/schema.js";
 
-describe("validate", () => {
-  const errorMessages = {
-    INVALID_EMAIL: "Invalid email.",
-    USERNAME_TOO_SHORT: "Username is too short.",
-    USERNAME_TOO_LONG: "Username is too long.",
-  } as const;
+describe("Validation schema", () => {
+  it("primitives", () => {
+    const product = {
+      name: "product 1",
+    };
+    const productSchema = Schema.object({
+      name: Schema
+        .string("Name should be a string.")
+        .minLength(Infinity, "error #2")
+    }, "");
 
-  it("should verify string lengths", () => {
-    const newUser = {
-      username: "abc"
-    } as const;
-
-    const errors = validate(newUser, {
-      username: [
-        { minLength: 5, message: errorMessages.USERNAME_TOO_SHORT },
-        { maxLength: 10, message: errorMessages.USERNAME_TOO_LONG }
-      ]
-    });
-
-    strictEqual(errors.length, 1);
-    strictEqual(errors[0], errorMessages.USERNAME_TOO_SHORT);
+    const errors = productSchema.getErrors(product);
+    strict(Array.isArray(errors.name));
+    strictEqual(errors.name, "error #2");
   });
 
-  it("should handle regular expressions", () => {
-    const user = { email: "example@email.com" } as const;
-    const errors = validate(user, {
-      email: [
-        { regex: /^[^@]+@[^@.]+\.[^@.]+$/, message: errorMessages.INVALID_EMAIL },
-        { regex: /^[^@]+[^@.]+\.[^@.]+$/, message: errorMessages.INVALID_EMAIL }
-      ]
-    });
+  it("nesting", () => {
+    const person = {
+      a: {
+        b: null
+      }
+    };
+    const personSchema = Schema.object({
+      a: Schema.object({
+        b: Schema.string("a.b should be a string")
+      }, "")
+    }, "");
+    const errors = personSchema.getErrors(person);
 
-    strictEqual(errors.length, 1);
-    strictEqual(errors[0], errorMessages.INVALID_EMAIL);
+    console.log(errors);
+    strict(typeof errors.a?.b === "string");
   });
 });

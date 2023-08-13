@@ -1,4 +1,5 @@
-export type Value = string | boolean | number | bigint | null | Date;
+import { Value } from "$src/types/values.js";
+
 export type RoundFnName = "ceil" | "floor" | "round" | "trunc";
 
 export type CastFn<T> = (value: any) => T;

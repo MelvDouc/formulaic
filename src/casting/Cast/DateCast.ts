@@ -11,5 +11,4 @@ export default class DateCast extends Cast<Date> {
   }
 
   public readonly [Cast.castFnSymbol] = new Set([DateCast.toDate]);
-
 }
