@@ -9,36 +9,24 @@ A lightweight form validator.
 ```javascript
 import { cast } from "shape-and-form";
 
-const rawData = {
-  name: "  ",
-  price: "0.5"
-};
-
-const productUpdate = cast(rawData, {
-  name: {
-    type: "string",
-    trim: true
-  },
-  price: {
-    type: "number",
-    roundFn: Math.trunc
-  },
-  expiryDate: {
-    type: "date",
-    fallback: new Date("1970-01-01")
-  },
-  missingProp: {
-    type: "string",
-    ignoreIfAbsent: true
-  }
+const productSchema = Cast.object({
+  name: Cast.string("product 1"),
+  price: Cast.number().convertNaN(1),
+  description: Cast.object({
+    isAvailable: Cast.boolean(false)
+  })
 });
 
-console.log(productUpdate);
+const product = productSchema.cast({ incomplete: "data" });
+console.log(product);
+
 /*
 {
-  name: "",
-  price: 0,
-  expiryDate: 1970-01-01T00:00:00.000Z
+  name: "product 1",
+  price: 1,
+  description: {
+    isAvailable: fase
+  }
 }
 */
 ```
@@ -46,24 +34,29 @@ console.log(productUpdate);
 ### Validating
 
 ```javascript
-import { validate } from "shape-and-form";
+import { Validation } from "shape-and-form";
 
-const errors = validate(productUpdate, {
-  name: [
-    { minLength: 1, message: "Name is too short." },
-    { maxLength: 50, message: "Name is too long." },
-  ],
-  price: [
-    { min: 1, message: "Price should be greater than or equal to 1." }
-  ],
-  expiryDate: [
-    {
-      isAfter: new Date(),
-      message: "Expiry date should be after today at minimum."
-    }
-  ]
+const productSchema = Validation.object({
+  name: Validation
+    .string("Name is required.")
+    .minLength(1, "Name is too short.")
+    .maxLength(100, "Name is too long."),
+  price: Validation
+    .number("Price must be a number.")
+    .min(0.01, "Price must be a positive number."),
+  description: Validation.object({
+    isAvailable: Validation.boolean("Availability must be specified.").optional()
+  }, "Description missing.")
 });
 
-if (errors.length > 0)
-  return res.json({ errors });
+const errors = productSchema.getErrors({ incomplete: "data" });
+console.log(errors);
+
+/*
+{
+  name: "Name is required.",
+  price: "Price must be a number.",
+  description: "Description missing."
+}
+*/
 ```

@@ -6,18 +6,9 @@ export default class NumberValidator extends NullableValidator {
     super();
     this._errorCheckers.push({
       error: invalidTypeError,
-      validateFn: isNumber,
+      validateFn: (value) => isNumber(value) && !isNaN(value),
       continue: false
     });
-  }
-
-  notNaN(error: string): this {
-    this._errorCheckers.push({
-      error,
-      validateFn: (number: number) => !isNaN(number),
-      continue: true
-    });
-    return this;
   }
 
   integer(error: string): this {
