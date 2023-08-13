@@ -10,12 +10,12 @@ describe("Validation schema", () => {
     const productSchema = Schema.object({
       name: Schema
         .string("Name should be a string.")
-        .minLength(Infinity, "error #2")
+        .minLength(1e9, "error #2")
     }, "");
 
     const errors = productSchema.getErrors(product);
     strict(Array.isArray(errors.name));
-    strictEqual(errors.name, "error #2");
+    strictEqual(errors.name[0], "error #2");
   });
 
   it("nesting", () => {
@@ -31,7 +31,6 @@ describe("Validation schema", () => {
     }, "");
     const errors = personSchema.getErrors(person);
 
-    console.log(errors);
-    strict(typeof errors.a?.b === "string");
+    strictEqual(errors.a?.b?.at(0), "a.b should be a string");
   });
 });

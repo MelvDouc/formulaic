@@ -1,16 +1,17 @@
 import Validator from "$src/validation/Validator/Validator.js";
 import { ValidationTypes } from "$src/types/types.js";
 
-export default class ObjectValidator<S extends ValidationTypes.Schema> extends Validator<object> {
-  protected isType(value: unknown): value is object {
-    return typeof value === "object" && value !== null;
-  }
-
+export default class ObjectValidator<S extends ValidationTypes.Schema> extends Validator {
   public readonly [Validator.errorCheckersSymbol]: ValidationTypes.ErrorChecker[] = [];
   private readonly schema: S;
 
   constructor(schema: S, invalidTypeError: string) {
-    super(invalidTypeError);
+    super();
+    this[Validator.errorCheckersSymbol].push({
+      error: invalidTypeError,
+      validateFn: (value) => typeof value === "object" && value !== null,
+      continue: false
+    });
     this.schema = schema;
   }
 

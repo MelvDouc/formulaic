@@ -2,13 +2,18 @@ import { isString } from "$src/utils.js";
 import Validator from "$src/validation/Validator/Validator.js";
 import { ValidationTypes } from "$src/types/types.js";
 
-export default class StringValidator extends Validator<string> {
+export default class StringValidator extends Validator {
   private static emailRegex = /^[^@]+@[^@.]+(\.[^@.]+)+$/;
 
   public readonly [Validator.errorCheckersSymbol]: ValidationTypes.ErrorChecker[] = [];
 
-  protected isType(value: unknown): value is string {
-    return isString(value);
+  constructor(invalidTypeError: string) {
+    super();
+    this[Validator.errorCheckersSymbol].push({
+      error: invalidTypeError,
+      validateFn: isString,
+      continue: false
+    });
   }
 
   public minLength(min: number, error: string) {
