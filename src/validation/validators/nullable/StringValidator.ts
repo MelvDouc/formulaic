@@ -1,15 +1,12 @@
 import { isString } from "$src/utils.js";
-import Validator from "$src/validation/Validator/Validator.js";
-import { ValidationTypes } from "$src/types/types.js";
+import NullableValidator from "$src/validation/validators/NullableValidator.js";
 
-export default class StringValidator extends Validator {
+export default class StringValidator extends NullableValidator {
   private static emailRegex = /^[^@]+@[^@.]+(\.[^@.]+)+$/;
-
-  public readonly [Validator.errorCheckersSymbol]: ValidationTypes.ErrorChecker[] = [];
 
   constructor(invalidTypeError: string) {
     super();
-    this[Validator.errorCheckersSymbol].push({
+    this._errorCheckers.push({
       error: invalidTypeError,
       validateFn: isString,
       continue: false
@@ -17,7 +14,7 @@ export default class StringValidator extends Validator {
   }
 
   public minLength(min: number, error: string) {
-    this[Validator.errorCheckersSymbol].push({
+    this._errorCheckers.push({
       validateFn: (str: string) => str.length >= min,
       error,
       continue: true
@@ -26,7 +23,7 @@ export default class StringValidator extends Validator {
   }
 
   public maxLength(max: number, error: string) {
-    this[Validator.errorCheckersSymbol].push({
+    this._errorCheckers.push({
       validateFn: (str: string) => str.length <= max,
       error,
       continue: true
@@ -35,7 +32,7 @@ export default class StringValidator extends Validator {
   }
 
   public email(error: string) {
-    this[Validator.errorCheckersSymbol].push({
+    this._errorCheckers.push({
       validateFn: (str: string) => StringValidator.emailRegex.test(str),
       error,
       continue: true
