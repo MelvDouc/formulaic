@@ -7,12 +7,16 @@ describe("Casting", () => {
     const product = {
       price: "abc"
     };
-    const schema = Schema.object({
-      name: Schema.string("product name"),
-      price: Schema.number().convertNaN(0)
+    const productSchema = Schema.object({
+      name: Schema.string("product 1"),
+      price: Schema.number(1),
+      description: Schema.object({
+        isAvailable: Schema.boolean(false)
+      })
     });
-    const casted = schema.cast(product);
-    strictEqual(casted.name, "product name");
+    const casted = productSchema.cast(product);
+
+    strictEqual(casted.name, "product 1");
     strictEqual(casted.price, 0);
   });
 
