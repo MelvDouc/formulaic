@@ -31,7 +31,6 @@ describe("primitives", () => {
     }, "");
     const errors = schema.getErrors(testObject);
 
-    console.log(JSON.stringify({ errors }));
     strictEqual(errors.age?.at(0), "err1");
   });
 
