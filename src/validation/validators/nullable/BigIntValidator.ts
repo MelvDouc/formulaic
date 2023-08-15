@@ -1,10 +1,10 @@
 import { isBigInt } from "$src/utils.js";
-import NullableValidator from "$src/validation/validators/NullableValidator.js";
+import NullableValidator, { errorCheckersSymbol } from "$src/validation/validators/NullableValidator.js";
 
 export default class NumberValidator extends NullableValidator {
-  constructor(invalidTypeError: string) {
+  constructor(invalidTypeError?: string) {
     super();
-    this._errorCheckers.push({
+    this[errorCheckersSymbol].push({
       error: invalidTypeError,
       validateFn: isBigInt,
       continue: false
@@ -12,8 +12,8 @@ export default class NumberValidator extends NullableValidator {
   }
 
 
-  min(minValue: bigint, error: string): this {
-    this._errorCheckers.push({
+  min(minValue: bigint, error?: string): this {
+    this[errorCheckersSymbol].push({
       error,
       validateFn: (int: bigint) => int >= minValue,
       continue: true
@@ -21,8 +21,8 @@ export default class NumberValidator extends NullableValidator {
     return this;
   }
 
-  max(maxValue: bigint, error: string): this {
-    this._errorCheckers.push({
+  max(maxValue: bigint, error?: string): this {
+    this[errorCheckersSymbol].push({
       error,
       validateFn: (int: bigint) => int <= maxValue,
       continue: true
@@ -30,8 +30,8 @@ export default class NumberValidator extends NullableValidator {
     return this;
   }
 
-  divisibleBy(divisor: bigint, error: string): this {
-    this._errorCheckers.push({
+  divisibleBy(divisor: bigint, error?: string): this {
+    this[errorCheckersSymbol].push({
       error,
       validateFn: (int: bigint) => int % divisor === 0n,
       continue: true

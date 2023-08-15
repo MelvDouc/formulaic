@@ -1,12 +1,16 @@
-import NullableValidator from "$src/validation/validators/NullableValidator.js";
+import NullableValidator, {
+  errorCheckersSymbol,
+  nullableSymbol,
+  optionalSymbol
+} from "$src/validation/validators/NullableValidator.js";
 import { ValidationTypes } from "$src/types/types.js";
 
 export default class ObjectValidator<S extends ValidationTypes.Schema> extends NullableValidator {
   private readonly schema: S;
 
-  constructor(schema: S, invalidTypeError: string) {
+  constructor(schema: S, invalidTypeError?: string) {
     super();
-    this._errorCheckers.push({
+    this[errorCheckersSymbol].push({
       error: invalidTypeError,
       validateFn: (value) => typeof value === "object" && value !== null,
       continue: false
@@ -18,8 +22,8 @@ export default class ObjectValidator<S extends ValidationTypes.Schema> extends N
     const acc = {} as ValidationTypes.ErrorRecord<S>;
 
     if (
-      this._nullable && source === null
-      || this._optional && source === void 0
+      this[nullableSymbol] && source === null
+      || this[optionalSymbol] && source === void 0
     )
       return acc;
 

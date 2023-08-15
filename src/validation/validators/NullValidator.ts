@@ -1,9 +1,9 @@
-import Validator from "$src/validation/Validator.js";
+import Validator, { errorCheckersSymbol, optionalSymbol } from "$src/validation/Validator.js";
 
 export default class NullValidator extends Validator {
-  constructor(invalidTypeError: string) {
+  constructor(invalidTypeError?: string) {
     super();
-    this._errorCheckers.push({
+    this[errorCheckersSymbol].push({
       error: invalidTypeError,
       validateFn: (value) => value === null,
       continue: false
@@ -13,11 +13,11 @@ export default class NullValidator extends Validator {
   getErrors<T>(value: T): string[] {
     const errors: string[] = [];
 
-    if (this._optional && value === void 0)
+    if (this[optionalSymbol] && value === void 0)
       return errors;
 
-    for (const { error, validateFn, continue: c } of this._errorCheckers) {
-      if (!validateFn(value)) {
+    for (const { error, validateFn, continue: c } of this[errorCheckersSymbol]) {
+      if (!validateFn(value) && error) {
         errors.push(error);
         if (!c) break;
       }

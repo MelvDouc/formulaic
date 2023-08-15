@@ -8,11 +8,11 @@ import ObjectValidator from "$src/validation/validators/nullable/ObjectValidator
 import StringValidator from "$src/validation/validators/nullable/StringValidator.js";
 
 export const Schema = {
-  bigint: (invalidTypeError: string) => new BigIntValidator(invalidTypeError),
-  boolean: (invalidTypeError: string) => new BooleanValidator(invalidTypeError),
-  date: (invalidTypeError: string) => new DateValidator(invalidTypeError),
-  null: (invalidTypeError: string) => new NullValidator(invalidTypeError),
-  number: (invalidTypeError: string) => new NumberValidator(invalidTypeError),
-  string: (invalidTypeError: string) => new StringValidator(invalidTypeError),
-  object: <S extends ValidationTypes.Schema>(schema: S, invalidTypeError: string) => new ObjectValidator(schema, invalidTypeError)
+  bigint: (invalidTypeError?: string) => new BigIntValidator(invalidTypeError),
+  boolean: (invalidTypeError?: string) => new BooleanValidator(invalidTypeError),
+  date: (invalidTypeError?: string) => new DateValidator(invalidTypeError),
+  null: (invalidTypeError?: string) => new NullValidator(invalidTypeError),
+  number: (invalidTypeError?: string) => new NumberValidator(invalidTypeError),
+  string: (invalidTypeError?: string) => new StringValidator(invalidTypeError),
+  object: <S extends ValidationTypes.Schema>(schema: S, invalidTypeError?: string) => new ObjectValidator(schema, invalidTypeError)
 };

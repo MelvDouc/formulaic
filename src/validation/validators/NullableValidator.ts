@@ -1,11 +1,11 @@
 import { ValidationTypes } from "$src/types/types.js";
-import Validator from "$src/validation/Validator.js";
+import Validator, { errorCheckersSymbol, nullableSymbol, optionalSymbol } from "$src/validation/Validator.js";
 
 export default abstract class NullableValidator extends Validator {
-  _nullable = false;
+  [nullableSymbol] = false;
 
   nullable(): this {
-    this._nullable = true;
+    this[nullableSymbol] = true;
     return this;
   }
 
@@ -13,13 +13,13 @@ export default abstract class NullableValidator extends Validator {
     const errors: string[] = [];
 
     if (
-      this._nullable && value === null
-      || this._optional && value === void 0
+      this[nullableSymbol] && value === null
+      || this[optionalSymbol] && value === void 0
     )
       return errors;
 
-    for (const { error, validateFn, continue: c } of this._errorCheckers) {
-      if (!validateFn(value)) {
+    for (const { error, validateFn, continue: c } of this[errorCheckersSymbol]) {
+      if (!validateFn(value) && error) {
         errors.push(error);
         if (!c) break;
       }
@@ -28,3 +28,5 @@ export default abstract class NullableValidator extends Validator {
     return errors;
   }
 }
+
+export { errorCheckersSymbol, nullableSymbol, optionalSymbol };

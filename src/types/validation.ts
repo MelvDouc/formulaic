@@ -1,6 +1,6 @@
 export type ErrorChecker = {
   validateFn: (str: any) => boolean;
-  error: string;
+  error?: string;
   continue: boolean;
 };
 

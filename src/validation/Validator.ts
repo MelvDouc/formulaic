@@ -1,13 +1,16 @@
 import { ValidationTypes } from "$src/types/types.js";
+import { optionalSymbol, nullableSymbol, errorCheckersSymbol } from "$src/validation/validators/symbols.js";
 
 export default abstract class Validator {
-  _errorCheckers: ValidationTypes.ErrorChecker[] = [];
-  _optional = false;
+  [errorCheckersSymbol]: ValidationTypes.ErrorChecker[] = [];
+  [optionalSymbol] = false;
 
   optional(): this {
-    this._optional = true;
+    this[optionalSymbol] = true;
     return this;
   }
 
   abstract getErrors<T>(value: T): ValidationTypes.ErrorRecord<any> | string[];
 }
+
+export { optionalSymbol, nullableSymbol, errorCheckersSymbol };
