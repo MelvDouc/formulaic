@@ -1,5 +1,8 @@
-import { ValidationTypes } from "$src/types/types.js";
-import Validator, { errorCheckersSymbol, nullableSymbol, optionalSymbol } from "$src/validation/Validator.js";
+import Validator, {
+  errorCheckersSymbol,
+  nullableSymbol,
+  optionalSymbol
+} from "$src/validation/Validator.js";
 
 export default abstract class NullableValidator extends Validator {
   [nullableSymbol] = false;
@@ -9,7 +12,7 @@ export default abstract class NullableValidator extends Validator {
     return this;
   }
 
-  getErrors<T>(value: T): ValidationTypes.ErrorRecord<any> | string[] {
+  getErrors<T>(value: T): string[] {
     const errors: string[] = [];
 
     if (

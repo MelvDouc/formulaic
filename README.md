@@ -11,7 +11,7 @@ import { cast } from "shape-and-form";
 
 const productSchema = Cast.object({
   name: Cast.string("product 1"),
-  price: Cast.number().convertNaN(1),
+  price: Cast.number().round("floor"),
   description: Cast.object({
     isAvailable: Cast.boolean(false)
   })
@@ -25,7 +25,7 @@ console.log(product);
   name: "product 1",
   price: 1,
   description: {
-    isAvailable: fase
+    isAvailable: false
   }
 }
 */

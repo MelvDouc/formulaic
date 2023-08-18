@@ -1,9 +1,10 @@
+import { ValidationTypes } from "$src/types/types.js";
+import { isObject } from "$src/utils.js";
 import NullableValidator, {
   errorCheckersSymbol,
   nullableSymbol,
   optionalSymbol
 } from "$src/validation/validators/NullableValidator.js";
-import { ValidationTypes } from "$src/types/types.js";
 
 export default class ObjectValidator<S extends ValidationTypes.Schema> extends NullableValidator {
   private readonly schema: S;
@@ -12,37 +13,29 @@ export default class ObjectValidator<S extends ValidationTypes.Schema> extends N
     super();
     this[errorCheckersSymbol].push({
       error: invalidTypeError,
-      validateFn: (value) => typeof value === "object" && value !== null,
+      validateFn: isObject,
       continue: false
     });
     this.schema = schema;
   }
 
-  getErrors<T>(source: T): ValidationTypes.ErrorRecord<S> {
-    const acc = {} as ValidationTypes.ErrorRecord<S>;
+  getErrors<T>(source: T): string[] {
+    const errors = super.getErrors(source);
 
-    if (
-      this[nullableSymbol] && source === null
-      || this[optionalSymbol] && source === void 0
-    )
-      return acc;
+    if (!errors.length) {
+      Object.entries(this.schema).forEach(([key, validator]) => {
+        if (validator[optionalSymbol] && !Object.hasOwn(source as object, key))
+          return;
 
-    return Object.entries(this.schema).reduce((acc, [key, validator]) => {
-      const value = (source as Record<string, any>)[key];
+        const value = (source as Record<string, any>)[key];
 
-      if (validator instanceof ObjectValidator) {
-        const errors = validator.getErrors(value);
-        if (Object.keys(errors).length)
-          acc[key as keyof S] = errors as any;
-        return acc;
-      }
+        if ((validator as NullableValidator)[nullableSymbol] && value === null)
+          return;
 
-      const errors = validator.getErrors(value);
+        errors.push(...validator.getErrors(value));
+      });
+    }
 
-      if (errors.length)
-        acc[key as keyof S] = errors as any;
-
-      return acc;
-    }, acc);
+    return errors;
   }
 }

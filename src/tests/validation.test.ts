@@ -1,6 +1,6 @@
+import { Schema } from "$src/validation/schema.js";
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { Schema } from "$src/validation/schema.js";
 
 const testObject = {
   isVerified: false,
@@ -21,44 +21,44 @@ describe("primitives", () => {
     }, "");
     const errors = schema.getErrors(testObject);
 
-    strictEqual(errors.isVerified, void 0);
-    strictEqual(errors.isVerified2?.at(0), "err2");
+    strictEqual(errors.length, 1);
+    strictEqual(errors[0], "err2");
   });
 
   it("number", () => {
     const schema = Schema.object({
-      age: Schema.number("").min(0, "").max(testObject.age - 1, "err1")
+      age: Schema.number().min(0, "").max(testObject.age - 1, "err1")
     }, "");
     const errors = schema.getErrors(testObject);
 
-    strictEqual(errors.age?.at(0), "err1");
+    strictEqual(errors[0], "err1");
   });
 
   it("bigint", () => {
     const schema = Schema.object({
-      bigInteger: Schema.bigint("").divisibleBy(BigInt(1e15 - 1), "err1")
+      bigInteger: Schema.bigint().divisibleBy(BigInt(1e15 - 1), "err1")
     }, "");
     const errors = schema.getErrors(testObject);
 
-    strictEqual(errors.bigInteger?.at(0), "err1");
+    strictEqual(errors[0], "err1");
   });
 
   it("date", () => {
     const schema = Schema.object({
-      birthDate: Schema.date("").before(new Date(), "err1")
+      birthDate: Schema.date().before(new Date(), "err1")
     }, "");
     const errors = schema.getErrors(testObject);
 
-    strictEqual(errors.birthDate?.at(0), "err1");
+    strictEqual(errors[0], "err1");
   });
 
   it("string", () => {
     const schema = Schema.object({
-      email: Schema.string("").email("err1")
+      email: Schema.string().email("err1")
     }, "");
     const errors = schema.getErrors(testObject);
 
-    strictEqual(errors.email?.at(0), "err1");
+    strictEqual(errors[0], "err1");
   });
 });
 
@@ -66,11 +66,11 @@ describe("object", () => {
   it("nesting", () => {
     const schema = Schema.object({
       nested: Schema.object({
-        property: Schema.null("")
+        property: Schema.null()
       }, "")
     }, "");
     const errors = schema.getErrors(testObject);
 
-    strictEqual(errors.nested?.property, void 0);
+    strictEqual(errors[0], void 0);
   });
 });
