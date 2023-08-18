@@ -13,3 +13,7 @@ export const isBoolean = (value: unknown): value is boolean => {
 export const isBigInt = (value: unknown): value is bigint => {
   return typeof value === "bigint";
 };
+
+export const isObject = (value: unknown): value is object => {
+  return typeof value === "object" && value !== null;
+};

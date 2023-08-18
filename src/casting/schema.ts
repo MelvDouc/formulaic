@@ -15,5 +15,5 @@ export const Schema = {
   number: (defaultValue = 0) => new NumberCast(defaultValue),
   date: (defaultValue = new Date()) => new DateCast(defaultValue),
   null: () => new NullCast(),
-  object: <T extends CastingTypes.Schema>(schema: T) => new ObjectCast<T>(schema, {})
+  object: <S extends CastingTypes.Schema>(schema: S) => new ObjectCast<S>(schema, {} as CastingTypes.CastedObject<S>)
 } as const;

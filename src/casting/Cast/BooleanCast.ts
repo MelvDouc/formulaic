@@ -1,9 +1,7 @@
-import Cast from "$src/casting/Cast/Cast.js";
+import Cast from "$src/casting/Cast.js";
 
 export default class BooleanCast extends Cast<boolean> {
-  private static toBoolean(value: unknown) {
+  protected toType(value: unknown): boolean {
     return !!value;
   }
-
-  public readonly [Cast.castFnSymbol] = new Set([BooleanCast.toBoolean]);
 }

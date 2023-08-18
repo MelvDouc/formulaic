@@ -1,20 +1,14 @@
-import Cast from "$src/casting/Cast/Cast.js";
+import Cast, { castFnSymbol } from "$src/casting/Cast.js";
 
 export default class StringCast extends Cast<string> {
-  private static toString(value: unknown) {
+  protected toType(value: unknown): string {
     return (typeof value === "string") ? value
       : (typeof value === "number" && isNaN(value) || value == null) ? ""
         : String(value);
   }
 
-  private static trim(value: string) {
-    return value.trim();
-  }
-
-  public readonly [Cast.castFnSymbol] = new Set([StringCast.toString]);
-
   public trim(): this {
-    this[Cast.castFnSymbol].add(StringCast.trim);
+    this[castFnSymbol].add((value: string) => value.trim());
     return this;
   }
 }

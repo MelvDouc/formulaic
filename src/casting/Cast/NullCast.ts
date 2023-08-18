@@ -1,11 +1,9 @@
-import Cast from "$src/casting/Cast/Cast.js";
+import Cast from "$src/casting/Cast.js";
 
 export default class NullCast extends Cast<null> {
-  private static toNull() {
+  protected toType(): null {
     return null;
   }
-
-  public readonly [Cast.castFnSymbol] = new Set([NullCast.toNull]);
 
   constructor() {
     super(null);
