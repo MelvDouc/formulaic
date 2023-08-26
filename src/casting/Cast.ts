@@ -1,4 +1,4 @@
-import { castFnSymbol, optionalSymbol, partialSymbol } from "$src/symbols.js";
+import { castFnSymbol, cloneSymbol, optionalSymbol, partialSymbol } from "$src/symbols.js";
 import { CastingTypes, Value } from "$src/types/types.js";
 
 export default abstract class Cast<T extends Value | CastingTypes.ValueRecord> {
@@ -9,6 +9,10 @@ export default abstract class Cast<T extends Value | CastingTypes.ValueRecord> {
   constructor(defaultValue: T) {
     this.defaultValue = defaultValue;
     this[castFnSymbol].add(this.toType);
+  }
+
+  public [cloneSymbol](): Cast<T> {
+    return Reflect.construct(this.constructor, [this.defaultValue]);
   }
 
   protected abstract toType(value: unknown): T;
@@ -25,4 +29,4 @@ export default abstract class Cast<T extends Value | CastingTypes.ValueRecord> {
   }
 }
 
-export { castFnSymbol, optionalSymbol, partialSymbol };
+export { castFnSymbol, cloneSymbol, optionalSymbol, partialSymbol };

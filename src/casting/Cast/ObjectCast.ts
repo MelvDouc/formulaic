@@ -1,4 +1,4 @@
-import Cast, { optionalSymbol, partialSymbol } from "$src/casting/Cast.js";
+import Cast, { cloneSymbol, optionalSymbol, partialSymbol } from "$src/casting/Cast.js";
 import { CastingTypes } from "$src/types/types.js";
 import { isObject } from "$src/utils.js";
 
@@ -12,6 +12,21 @@ export default class ObjectCast<S extends CastingTypes.Schema> extends Cast<Cast
     this[partialSymbol] = partial;
   }
 
+  public [cloneSymbol]() {
+    return new ObjectCast(
+      this.cloneSchema(),
+      this.defaultValue,
+      this[partialSymbol]
+    );
+  }
+
+  private cloneSchema(): S {
+    return Object.entries(this.schema).reduce((acc, [key, value]) => {
+      acc[key as keyof S] = value[cloneSymbol]() as S[keyof S];
+      return acc;
+    }, {} as S);
+  }
+
   protected toType(value: unknown): CastingTypes.CastedObject<S> {
     return (isObject(value))
       ? value as CastingTypes.CastedObject<S>
@@ -20,7 +35,7 @@ export default class ObjectCast<S extends CastingTypes.Schema> extends Cast<Cast
 
   public partial(): ObjectCast<S> {
     return new ObjectCast(
-      structuredClone(this.schema),
+      this.cloneSchema(),
       this.defaultValue,
       true
     );
