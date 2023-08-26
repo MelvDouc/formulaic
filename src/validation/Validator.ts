@@ -1,16 +1,24 @@
+import { cloneSymbol, errorCheckersSymbol, nullableSymbol, optionalSymbol } from "$src/symbols.js";
 import { ValidationTypes } from "$src/types/types.js";
-import { optionalSymbol, nullableSymbol, errorCheckersSymbol } from "$src/symbols.js";
 
 export default abstract class Validator {
-  [errorCheckersSymbol]: ValidationTypes.ErrorChecker[] = [];
+  public [errorCheckersSymbol]: ValidationTypes.ErrorChecker[] = [];
   [optionalSymbol] = false;
 
-  optional(): this {
-    this[optionalSymbol] = true;
-    return this;
+  optional(): Validator {
+    const clone = this[cloneSymbol]();
+    clone[optionalSymbol] = true;
+    return clone;
+  }
+
+  [cloneSymbol](): Validator {
+    const clone = Reflect.construct(this.constructor, []);
+    clone[errorCheckersSymbol] = [...this[errorCheckersSymbol]];
+    clone[optionalSymbol] = this[optionalSymbol];
+    return clone;
   }
 
   abstract getErrors<T>(value: T): string[];
 }
 
-export { optionalSymbol, nullableSymbol, errorCheckersSymbol };
+export { cloneSymbol, errorCheckersSymbol, nullableSymbol, optionalSymbol };

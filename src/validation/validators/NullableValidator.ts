@@ -1,4 +1,5 @@
 import Validator, {
+  cloneSymbol,
   errorCheckersSymbol,
   nullableSymbol,
   optionalSymbol
@@ -7,9 +8,10 @@ import Validator, {
 export default abstract class NullableValidator extends Validator {
   [nullableSymbol] = false;
 
-  nullable(): this {
-    this[nullableSymbol] = true;
-    return this;
+  nullable(): NullableValidator {
+    const clone = this[cloneSymbol]() as NullableValidator;
+    clone[nullableSymbol] = true;
+    return clone;
   }
 
   getErrors<T>(value: T): string[] {

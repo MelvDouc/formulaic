@@ -73,4 +73,15 @@ describe("object", () => {
 
     strictEqual(errors[0], void 0);
   });
+
+  it("partial", () => {
+    const schema = Schema
+      .object({
+        isVerified: Schema.boolean("err1"),
+        isVerified2: Schema.boolean("err2")
+      }, "")
+      .partial();
+    const errors = schema.getErrors({});
+    strictEqual(errors.length, 0);
+  });
 });
