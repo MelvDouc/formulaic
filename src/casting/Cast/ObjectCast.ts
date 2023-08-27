@@ -5,8 +5,8 @@ import { isObject } from "$src/utils.js";
 export default class ObjectCast<
   Optional extends boolean,
   P extends boolean,
-  Schema extends CastSchema,
-  Casted = CastedObject<Schema, P>,
+  Schema extends Casting.Schema,
+  Casted = Casting.Casted<Schema, P>,
 > extends Cast<Casted, Optional> {
   private readonly schema: Schema;
   private readonly [partialSymbol]: boolean;

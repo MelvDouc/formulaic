@@ -1,9 +1,9 @@
-import NullableValidator, { errorCheckersSymbol } from "$src/validation/validators/NullableValidator.js";
+import NullableValidator from "$src/validation/validators/NullableValidator.js";
 
 export default class DateValidator extends NullableValidator {
   constructor(invalidTypeError?: string) {
     super();
-    this[errorCheckersSymbol].push({
+    this.addErrorChecker({
       error: invalidTypeError,
       validateFn: (value) => value instanceof Date,
       continue: false
@@ -11,29 +11,26 @@ export default class DateValidator extends NullableValidator {
   }
 
   valid(error?: string): this {
-    this[errorCheckersSymbol].push({
+    return this.addErrorChecker({
       error,
       validateFn: (value: Date) => !isNaN(value.getTime()),
       continue: false
     });
-    return this;
   }
 
   before(date: Date, error?: string): this {
-    this[errorCheckersSymbol].push({
+    return this.addErrorChecker({
       error,
       validateFn: (value: Date) => value.getTime() < date.getTime(),
       continue: true
     });
-    return this;
   }
 
   after(date: Date, error?: string): this {
-    this[errorCheckersSymbol].push({
+    return this.addErrorChecker({
       error,
       validateFn: (value: Date) => value.getTime() > date.getTime(),
       continue: true
     });
-    return this;
   }
 }
