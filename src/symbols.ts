@@ -1,4 +1,5 @@
-export const castFnSymbol = Symbol();
+export const castFunctionsSymbol = Symbol();
+export const defaultValueSymbol = Symbol();
 export const nullableSymbol = Symbol();
 export const optionalSymbol = Symbol();
 export const partialSymbol = Symbol();

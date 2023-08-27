@@ -1,5 +1,5 @@
 import { Schema } from "$src/casting/schema.js";
-import { strictEqual } from "node:assert";
+import { strict, strictEqual } from "node:assert";
 import { describe, it } from "node:test";
 
 describe("String", () => {
@@ -64,7 +64,7 @@ describe("Object", () => {
 
     strictEqual(test.name, " abc ");
     strictEqual(test.age, -4);
-    strictEqual("isVerified" in test, false);
+    strict(!Object.hasOwn(test, "isVerified"));
   });
 
   it("nested", () => {
@@ -75,7 +75,7 @@ describe("Object", () => {
     });
     const test = s.cast({});
 
-    strictEqual(test.nested?.value, null);
+    strictEqual(test.nested.value, null);
   });
 
   it("partial", () => {
@@ -86,8 +86,10 @@ describe("Object", () => {
         })
         .partial()
     });
-    const test = s.cast({});
+    const test1 = s.cast({});
+    const test2 = s.partial().cast({});
 
-    strictEqual(Object.keys(test.nested).length, 0);
+    strict(!Object.hasOwn(test1.nested, "value"));
+    strict(!Object.hasOwn(test2, "nested"));
   });
 });

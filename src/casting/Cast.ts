@@ -1,32 +1,32 @@
-import { castFnSymbol, cloneSymbol, optionalSymbol, partialSymbol } from "$src/symbols.js";
-import { CastingTypes, Value } from "$src/types/types.js";
+import { castFunctionsSymbol, cloneSymbol, defaultValueSymbol, optionalSymbol, } from "$src/symbols.js";
 
-export default abstract class Cast<T extends Value | CastingTypes.ValueRecord> {
-  protected readonly defaultValue: T;
-  public readonly [castFnSymbol] = new Set<CastingTypes.CastFn<T>>();
-  public [optionalSymbol] = false;
+export default abstract class Cast<T, Optional extends boolean = false> {
+  public [defaultValueSymbol]: T;
+  public [castFunctionsSymbol]: CastFunction<T>[];
+  public [optionalSymbol]: boolean;
 
-  constructor(defaultValue: T) {
-    this.defaultValue = defaultValue;
-    this[castFnSymbol].add(this.toType);
+  constructor({ castFunctions, defaultValue, optional }: {
+    castFunctions: CastFunction<T>[];
+    defaultValue: T;
+    optional: boolean;
+  }) {
+    this[castFunctionsSymbol] = castFunctions;
+    this[defaultValueSymbol] = defaultValue;
+    this[optionalSymbol] = optional;
   }
 
-  public [cloneSymbol](): Cast<T> {
-    return Reflect.construct(this.constructor, [this.defaultValue]);
-  }
+  public abstract [cloneSymbol](): Cast<T, Optional>;
+  public abstract optional(): Cast<T, true>;
 
-  protected abstract toType(value: unknown): T;
-
-  public cast(sourceValue: any): T {
-    if (sourceValue !== void 0)
-      return [...this[castFnSymbol]].reduce((acc, fn) => fn(acc), sourceValue);
-    return this.defaultValue;
-  }
-
-  public optional(): this {
-    this[optionalSymbol] = true;
+  protected addCastFn(castFn: CastFunction<T>): this {
+    this[castFunctionsSymbol].push(castFn);
     return this;
   }
-}
 
-export { castFnSymbol, cloneSymbol, optionalSymbol, partialSymbol };
+  public cast(value: unknown): T {
+    if (value === void 0)
+      return this[defaultValueSymbol];
+
+    return this[castFunctionsSymbol].reduce((acc, fn) => fn(acc), value as T);
+  }
+}
