@@ -1,19 +1,14 @@
-import { cloneSymbol, partialSymbol } from "$src/symbols.js";
-import { ValidationTypes } from "$src/types/types.js";
+import { errorCheckersSymbol, nullableSymbol, optionalSymbol, partialSymbol } from "$src/symbols.js";
 import { isObject } from "$src/utils.js";
-import NullableValidator, {
-  errorCheckersSymbol,
-  nullableSymbol,
-  optionalSymbol
-} from "$src/validation/validators/NullableValidator.js";
+import NullableValidator from "$src/validation/validators/NullableValidator.js";
 
-export default class ObjectValidator<S extends ValidationTypes.Schema> extends NullableValidator {
+export default class ObjectValidator<S extends Validation.Schema> extends NullableValidator {
   private readonly schema: S;
   public readonly [partialSymbol]: boolean;
 
   constructor(schema: S, invalidTypeError?: string, partial?: boolean) {
     super();
-    this[errorCheckersSymbol].push({
+    this.addErrorChecker({
       error: invalidTypeError,
       validateFn: isObject,
       continue: false
@@ -24,12 +19,12 @@ export default class ObjectValidator<S extends ValidationTypes.Schema> extends N
 
   private cloneSchema(): S {
     return Object.entries(this.schema).reduce((acc, [key, value]) => {
-      acc[key as keyof S] = value[cloneSymbol]() as S[keyof S];
+      acc[key as keyof S] = value.clone() as S[keyof S];
       return acc;
     }, {} as S);
   }
 
-  [cloneSymbol]() {
+  clone() {
     const clone = new ObjectValidator(this.cloneSchema(), void 0, this[partialSymbol]);
     clone[errorCheckersSymbol] = [...this[errorCheckersSymbol]];
     clone[optionalSymbol] = this[optionalSymbol];
@@ -56,10 +51,8 @@ export default class ObjectValidator<S extends ValidationTypes.Schema> extends N
 
         const value = (source as Record<string, any>)[key];
 
-        if ((validator as NullableValidator)[nullableSymbol] && value === null)
-          return;
-
-        errors.push(...validator.getErrors(value));
+        if (!(validator as NullableValidator)[nullableSymbol] || value !== null)
+          errors.push(...validator.getErrors(value));
       });
     }
 

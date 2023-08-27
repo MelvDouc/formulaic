@@ -1,55 +1,55 @@
-import Cast, { cloneSymbol, optionalSymbol, partialSymbol } from "$src/casting/Cast.js";
-import { CastingTypes } from "$src/types/types.js";
+import Cast from "$src/casting/Cast.js";
+import { cloneSymbol, defaultValueSymbol, optionalSymbol, partialSymbol } from "$src/symbols.js";
 import { isObject } from "$src/utils.js";
 
-export default class ObjectCast<S extends CastingTypes.Schema> extends Cast<CastingTypes.CastedObject<S>> {
-  private readonly schema: S;
-  protected readonly [partialSymbol]: boolean;
+export default class ObjectCast<
+  Optional extends boolean,
+  P extends boolean,
+  Schema extends Casting.Schema,
+  Casted = Casting.Casted<Schema, P>,
+> extends Cast<Casted, Optional> {
+  private readonly schema: Schema;
+  private readonly [partialSymbol]: boolean;
 
-  constructor(schema: S, defaultValue: CastingTypes.CastedObject<S>, partial = false) {
-    super(defaultValue);
+  constructor(schema: Schema, optional = false, partial = false) {
+    super({
+      castFunctions: [],
+      defaultValue: {} as Casted,
+      optional
+    });
     this.schema = schema;
     this[partialSymbol] = partial;
   }
 
-  public [cloneSymbol]() {
-    return new ObjectCast(
-      this.cloneSchema(),
-      this.defaultValue,
-      this[partialSymbol]
-    );
-  }
-
-  private cloneSchema(): S {
+  private cloneSchema() {
     return Object.entries(this.schema).reduce((acc, [key, value]) => {
-      acc[key as keyof S] = value[cloneSymbol]() as S[keyof S];
+      acc[key as keyof Schema] = value[cloneSymbol]() as Schema[keyof Schema];
       return acc;
-    }, {} as S);
+    }, {} as Schema);
   }
 
-  protected toType(value: unknown): CastingTypes.CastedObject<S> {
-    return (isObject(value))
-      ? value as CastingTypes.CastedObject<S>
-      : {} as CastingTypes.CastedObject<S>;
+  public [cloneSymbol](): ObjectCast<Optional, P, Schema, Casted> {
+    return new ObjectCast(this.cloneSchema(), this[optionalSymbol], this[partialSymbol]);
   }
 
-  public partial(): ObjectCast<S> {
-    return new ObjectCast(
-      this.cloneSchema(),
-      this.defaultValue,
-      true
-    );
+  public optional(): ObjectCast<true, P, Schema, Casted> {
+    return new ObjectCast(this.cloneSchema(), true, this[partialSymbol]);
   }
 
-  public cast(sourceValue: any) {
-    const obj = sourceValue ? this.toType(sourceValue) : this.defaultValue;
+  public partial(): ObjectCast<Optional, true, Schema, Casted> {
+    return new ObjectCast(this.cloneSchema(), this[optionalSymbol], true);
+  }
+
+  public cast(value: unknown) {
+    const obj = isObject(value) ? value : this[defaultValueSymbol] as object;
 
     return Object.entries(this.schema).reduce((acc, [key, c]) => {
-      if ((c[optionalSymbol] || this[partialSymbol]) && !Object.hasOwn(obj, key))
+      if (!Object.hasOwn(obj, key) && (c[optionalSymbol] || this[partialSymbol])) {
         return acc;
+      }
 
-      acc[key as keyof typeof acc] = c.cast(obj[key]);
+      acc[key as keyof Casted] = c.cast(obj[key as keyof object]) as Casted[keyof Casted];
       return acc;
-    }, {} as CastingTypes.CastedObject<S>);
+    }, {} as Casted);
   }
 }
