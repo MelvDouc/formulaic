@@ -2,11 +2,11 @@ import { castFunctionsSymbol, cloneSymbol, defaultValueSymbol, optionalSymbol, }
 
 export default abstract class Cast<T, Optional extends boolean = false> {
   public [defaultValueSymbol]: T;
-  public [castFunctionsSymbol]: CastFunction<T>[];
+  public [castFunctionsSymbol]: Casting.CastFn<T>[];
   public [optionalSymbol]: boolean;
 
   constructor({ castFunctions, defaultValue, optional }: {
-    castFunctions: CastFunction<T>[];
+    castFunctions: Casting.CastFn<T>[];
     defaultValue: T;
     optional: boolean;
   }) {
@@ -18,7 +18,7 @@ export default abstract class Cast<T, Optional extends boolean = false> {
   public abstract [cloneSymbol](): Cast<T, Optional>;
   public abstract optional(): Cast<T, true>;
 
-  protected addCastFn(castFn: CastFunction<T>): this {
+  protected addCastFn(castFn: Casting.CastFn<T>): this {
     this[castFunctionsSymbol].push(castFn);
     return this;
   }

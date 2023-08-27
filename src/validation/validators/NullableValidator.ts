@@ -1,15 +1,11 @@
-import Validator, {
-  cloneSymbol,
-  errorCheckersSymbol,
-  nullableSymbol,
-  optionalSymbol
-} from "$src/validation/Validator.js";
+import { errorCheckersSymbol, nullableSymbol, optionalSymbol } from "$src/symbols.js";
+import Validator from "$src/validation/Validator.js";
 
 export default abstract class NullableValidator extends Validator {
   [nullableSymbol] = false;
 
   nullable(): NullableValidator {
-    const clone = this[cloneSymbol]() as NullableValidator;
+    const clone = this.clone() as NullableValidator;
     clone[nullableSymbol] = true;
     return clone;
   }

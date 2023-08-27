@@ -1,9 +1,10 @@
-import Validator, { errorCheckersSymbol, optionalSymbol } from "$src/validation/Validator.js";
+import { errorCheckersSymbol, optionalSymbol } from "$src/symbols.js";
+import Validator from "$src/validation/Validator.js";
 
 export default class NullValidator extends Validator {
   constructor(invalidTypeError?: string) {
     super();
-    this[errorCheckersSymbol].push({
+    this.addErrorChecker({
       error: invalidTypeError,
       validateFn: (value) => value === null,
       continue: false
